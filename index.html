@@ -442,7 +442,6 @@
 </div>
 
 <script>
-  // replace with apps script url once deployed
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaVJA-YJLRbQTvkdcAnC-GWQD581Ak-rhaiQ6YNdAwTgu28Dk-944A7OB3DhOOmOVSvg/exec';
 
   const REQUIRED = ['name','company','phone','email','clientName','clientWebsite','postcode','completionDate'];
@@ -483,22 +482,29 @@
       .map(id => document.getElementById(id).value)
       .join(', ');
 
-    const params = new URLSearchParams({
-      name:           document.getElementById('name').value.trim(),
-      company:        document.getElementById('company').value.trim(),
-      phone:          document.getElementById('phone').value.trim(),
-      email:          document.getElementById('email').value.trim(),
-      clientName:     document.getElementById('clientName').value.trim(),
-      clientWebsite:  document.getElementById('clientWebsite').value.trim(),
-      postcode:       document.getElementById('postcode').value.trim().toUpperCase(),
-      completionDate: document.getElementById('completionDate').value,
-      needs:          needs,
-      additionalInfo: document.getElementById('additionalInfo').value.trim(),
-    });
+    const params = new URLSearchParams();
+    params.append('name',           document.getElementById('name').value.trim());
+    params.append('company',        document.getElementById('company').value.trim());
+    params.append('phone',          document.getElementById('phone').value.trim());
+    params.append('email',          document.getElementById('email').value.trim());
+    params.append('clientName',     document.getElementById('clientName').value.trim());
+    params.append('clientWebsite',  document.getElementById('clientWebsite').value.trim());
+    params.append('postcode',       document.getElementById('postcode').value.trim().toUpperCase());
+    params.append('completionDate', document.getElementById('completionDate').value);
+    params.append('needs',          needs);
+    params.append('additionalInfo', document.getElementById('additionalInfo').value.trim());
 
     fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'cors' })
-      .then(() => { btn.disabled = false; btn.textContent = 'Register Project'; showOverlay(name); })
-      .catch(() => { btn.disabled = false; btn.textContent = 'Register Project'; alert('Submission failed — check your connection and try again.'); });
+      .then(() => {
+        btn.disabled    = false;
+        btn.textContent = 'Register Project';
+        showOverlay(name);
+      })
+      .catch(() => {
+        btn.disabled    = false;
+        btn.textContent = 'Register Project';
+        alert('Submission failed — check your connection and try again.');
+      });
   });
 
   REQUIRED.forEach(id => {
@@ -514,6 +520,10 @@
       document.getElementById(id).classList.remove('error');
       document.getElementById('err-' + id).classList.remove('visible');
     });
+    ['need-quotes','need-renders','need-floorplans','need-customisation','need-other'].forEach(id => {
+      document.getElementById(id).checked = false;
+    });
+    document.getElementById('additionalInfo').value = '';
     document.getElementById('submitBtn').disabled    = false;
     document.getElementById('submitBtn').textContent = 'Register Project';
   }
